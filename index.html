@@ -1,10 +1,1097 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snake Xtreme - Arcade Edition</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@400;500;600;700&display=swap');
+
+:root {
+ --bg:#090817;
+ --panel:#15132b;
+ --cyan:#00f5d4;
+ --pink:#ff3cac;
+ --purple:#a855f7;
+ --yellow:#ffe45e;
+ --muted:#aaa5c9;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+ background:
+ radial-gradient(circle at 15% 10%,#36105b 0,transparent 35%),
+ radial-gradient(circle at 90% 90%,#062c48 0,transparent 35%),
+ var(--bg);
+ color:white;
+ font-family:Poppins,sans-serif;
+ min-height:100vh;
+ padding:25px 14px;
+}
+
+button,select{font:inherit}
+button{cursor:pointer}
+
+.app{max-width:1100px;margin:auto}
+
+header{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ flex-wrap:wrap;
+ gap:15px;
+ margin-bottom:25px;
+}
+
+.logo{
+ font-family:Orbitron,sans-serif;
+ font-size:clamp(22px,4vw,34px);
+ font-weight:900;
+ letter-spacing:2px;
+ background:linear-gradient(90deg,var(--cyan),var(--purple),var(--pink));
+ background-clip:text;
+ -webkit-background-clip:text;
+ color:transparent;
+}
+
+.logo span{font-size:13px;display:block;color:var(--muted);letter-spacing:4px}
+
+.header-actions{display:flex;gap:9px;flex-wrap:wrap}
+
+.small-btn{
+ background:#201d3d;
+ color:white;
+ border:1px solid #45406b;
+ padding:10px 14px;
+ border-radius:12px;
+}
+
+.small-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.layout{
+ display:grid;
+ grid-template-columns:minmax(0,1fr) 280px;
+ gap:20px;
+ align-items:start;
+}
+
+.panel{
+ background:rgba(21,19,43,.92);
+ border:1px solid #343052;
+ border-radius:20px;
+ padding:18px;
+ box-shadow:0 15px 45px #0005;
+}
+
+.stats{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:10px;
+ margin-bottom:15px;
+}
+
+.stat{
+ background:#201d3c;
+ padding:12px 7px;
+ text-align:center;
+ border-radius:13px;
+ border:1px solid #383257;
+}
+
+.stat small{display:block;color:var(--muted);font-size:10px}
+.stat strong{font-family:Orbitron;font-size:clamp(15px,3vw,22px);color:var(--cyan)}
+
+.game-head{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:10px;
+ margin-bottom:12px;
+}
+
+.game-head h2{font-family:Orbitron;font-size:15px}
+.level-label{color:var(--yellow);font-size:12px}
+
+.canvas-wrap{
+ position:relative;
+ width:100%;
+ max-width:600px;
+ margin:auto;
+ overflow:hidden;
+ border-radius:15px;
+ border:2px solid var(--purple);
+ box-shadow:0 0 25px #a855f744;
+ background:#090d1c;
+}
+
+canvas{
+ display:block;
+ width:100%;
+ height:auto;
+ aspect-ratio:1;
+}
+
+.overlay{
+ position:absolute;
+ inset:0;
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ text-align:center;
+ padding:20px;
+ background:#090817dc;
+ backdrop-filter:blur(7px);
+}
+
+.overlay-content{max-width:300px}
+.overlay h2{
+ font-family:Orbitron;
+ color:var(--cyan);
+ font-size:clamp(24px,5vw,35px);
+ margin-bottom:10px;
+}
+.overlay p{color:#d1cde5;font-size:13px;margin-bottom:17px}
+
+.hidden{display:none!important}
+
+.primary{
+ background:linear-gradient(100deg,#00d9c0,#00a6fb);
+ color:#07141c;
+ border:none;
+ border-radius:12px;
+ padding:12px 22px;
+ font-weight:800;
+ box-shadow:0 0 18px #00f5d455;
+}
+
+.primary:hover{filter:brightness(1.15);transform:translateY(-2px)}
+
+.game-buttons{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:9px;
+ margin-top:15px;
+}
+
+.game-buttons button{
+ border:1px solid #45406b;
+ background:#24203f;
+ color:white;
+ border-radius:11px;
+ padding:12px 5px;
+ font-weight:600;
+}
+
+.game-buttons button:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.sidebar{display:flex;flex-direction:column;gap:15px}
+
+.section-title{
+ font-family:Orbitron;
+ font-size:13px;
+ color:var(--cyan);
+ margin-bottom:14px;
+ letter-spacing:1px;
+}
+
+.setting{margin-bottom:14px}
+.setting label{
+ display:block;
+ font-size:12px;
+ color:var(--muted);
+ margin-bottom:7px;
+}
+
+select{
+ width:100%;
+ background:#201d3c;
+ color:white;
+ border:1px solid #49436c;
+ border-radius:10px;
+ padding:10px;
+ outline:none;
+}
+
+.skin-list{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+
+.skin{
+ height:37px;
+ border:2px solid #48415f;
+ border-radius:10px;
+ font-size:18px;
+ background:#24203f;
+}
+
+.skin.active{border-color:white;box-shadow:0 0 12px #fff6}
+
+.progress{
+ height:8px;
+ background:#302b4a;
+ border-radius:10px;
+ overflow:hidden;
+ margin:9px 0;
+}
+
+.progress div{
+ height:100%;
+ background:linear-gradient(90deg,var(--cyan),var(--purple));
+ width:0%;
+ transition:width .3s;
+}
+
+.info-line{
+ display:flex;
+ justify-content:space-between;
+ color:var(--muted);
+ font-size:12px;
+ gap:8px;
+}
+
+.achievement{
+ display:flex;
+ align-items:center;
+ gap:10px;
+ padding:9px;
+ background:#201d3c;
+ border-radius:11px;
+ margin-bottom:8px;
+ font-size:12px;
+}
+
+.achievement .emoji{font-size:23px}
+.achievement.locked{opacity:.35}
+.achievement b{display:block;color:white}
+.achievement small{color:var(--muted)}
+
+.mobile-controls{
+ display:grid;
+ grid-template-columns:repeat(3,55px);
+ gap:7px;
+ justify-content:center;
+ margin:17px auto 0;
+}
+
+.mobile-controls button{
+ height:47px;
+ background:linear-gradient(135deg,#7637cf,#d12d9e);
+ border:1px solid #b65cff;
+ color:white;
+ font-size:22px;
+ border-radius:12px;
+ touch-action:none;
+}
+
+.mobile-controls .empty{visibility:hidden}
+
+.tip{
+ font-size:11px;
+ color:var(--muted);
+ text-align:center;
+ margin-top:14px;
+}
+
+footer{
+ text-align:center;
+ color:#797493;
+ font-size:11px;
+ margin-top:25px;
+}
+
+.toast{
+ position:fixed;
+ bottom:25px;
+ left:50%;
+ transform:translateX(-50%);
+ background:#201d3c;
+ border:1px solid var(--cyan);
+ color:white;
+ padding:12px 20px;
+ border-radius:12px;
+ z-index:10;
+ box-shadow:0 0 20px #00f5d455;
+ font-size:13px;
+ display:none;
+}
+
+@media(max-width:760px){
+ .layout{grid-template-columns:1fr}
+ .sidebar{display:grid;grid-template-columns:1fr 1fr}
+ .panel{padding:13px}
+}
+
+@media(max-width:450px){
+ body{padding:12px 8px}
+ .sidebar{grid-template-columns:1fr}
+ .stats{gap:6px}
+ .stat{padding:10px 3px}
+ .game-buttons button{font-size:12px}
+}
+</style>
+</head>
+
 <body>
+<div class="app">
 
-<h2>HTML Image</h2>
-<img src="https://i.pinimg.com/736x/f8/d8/b9/f8d8b9579418b9c389af3c9775745641.jpg" alt="Trulli" width="500" height="333">
+<header>
+ <div class="logo">
+  🐍 SNAKE XTREME
+  <span>ULTIMATE ARCADE EDITION</span>
+ </div>
+ <div class="header-actions">
+  <button class="small-btn" id="soundBtn">🔊 Sound ON</button>
+  <button class="small-btn" onclick="showHelp()">❔ Help</button>
+ </div>
+</header>
 
+<div class="layout">
+
+<!-- MAIN GAME -->
+<main class="panel">
+
+ <div class="stats">
+  <div class="stat"><small>SCORE</small><strong id="score">0</strong></div>
+  <div class="stat"><small>BEST</small><strong id="best">0</strong></div>
+  <div class="stat"><small>COINS</small><strong id="coins">0</strong></div>
+  <div class="stat"><small>LEVEL</small><strong id="level">1</strong></div>
+ </div>
+
+ <div class="game-head">
+  <h2>🎮 GAME ARENA</h2>
+  <span class="level-label" id="status">● READY</span>
+ </div>
+
+ <div class="canvas-wrap">
+  <canvas id="game" width="500" height="500"></canvas>
+
+  <div class="overlay" id="overlay">
+   <div class="overlay-content">
+    <h2 id="overlayTitle">SNAKE XTREME</h2>
+    <p id="overlayText">Collect food, earn coins, unlock levels and become the ultimate snake champion!</p>
+    <button class="primary" onclick="startGame()" id="overlayBtn">▶ START GAME</button>
+   </div>
+  </div>
+ </div>
+
+ <div class="game-buttons">
+  <button onclick="startGame()">▶ Start</button>
+  <button onclick="pauseGame()">Ⅱ Pause</button>
+  <button onclick="restartGame()">↻ Restart</button>
+ </div>
+
+ <div class="mobile-controls">
+  <button class="empty"></button>
+  <button onclick="changeDirection('UP')">↑</button>
+  <button class="empty"></button>
+  <button onclick="changeDirection('LEFT')">←</button>
+  <button onclick="changeDirection('DOWN')">↓</button>
+  <button onclick="changeDirection('RIGHT')">→</button>
+ </div>
+
+ <p class="tip">⌨️ Arrow Keys / WASD &nbsp; • &nbsp; 📱 Touch Controls</p>
+</main>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+
+ <section class="panel">
+  <h3 class="section-title">⚙️ GAME SETTINGS</h3>
+
+  <div class="setting">
+   <label>DIFFICULTY MODE</label>
+   <select id="difficulty">
+    <option value="easy">🟢 Easy</option>
+    <option value="medium" selected>🟡 Medium</option>
+    <option value="hard">🔴 Hard</option>
+   </select>
+  </div>
+
+  <div class="setting">
+   <label>SNAKE SKIN</label>
+   <div class="skin-list">
+    <button class="skin active" data-skin="0">🟢</button>
+    <button class="skin" data-skin="1">🔵</button>
+    <button class="skin" data-skin="2">🟣</button>
+    <button class="skin" data-skin="3">🟡</button>
+    <button class="skin" data-skin="4">🔴</button>
+   </div>
+  </div>
+
+  <div class="setting">
+   <label>GAME PROGRESS</label>
+   <div class="progress"><div id="progressBar"></div></div>
+   <div class="info-line">
+    <span id="progressText">0 / 100 XP</span>
+    <span id="nextLevel">Next level</span>
+   </div>
+  </div>
+ </section>
+
+ <section class="panel">
+  <h3 class="section-title">⚡ POWER-UPS</h3>
+  <div class="achievement">
+   <span class="emoji">⭐</span>
+   <div><b>Golden Food</b><small>Bonus 50 points</small></div>
+  </div>
+  <div class="achievement">
+   <span class="emoji">💎</span>
+   <div><b>Gem Bonus</b><small>Collect bonus coins</small></div>
+  </div>
+  <div class="achievement">
+   <span class="emoji">🛡️</span>
+   <div><b>Shield</b><small>Protects against one collision</small></div>
+  </div>
+  <div class="info-line">
+   <span>Active shield</span>
+   <b id="shieldStatus">OFF</b>
+  </div>
+ </section>
+
+ <section class="panel">
+  <h3 class="section-title">🏆 ACHIEVEMENTS</h3>
+  <div id="achievements"></div>
+ </section>
+
+ <section class="panel">
+  <h3 class="section-title">📊 STATISTICS</h3>
+  <div class="info-line"><span>Total games</span><b id="games">0</b></div>
+  <div class="info-line" style="margin-top:10px"><span>Total food</span><b id="foodCount">0</b></div>
+  <div class="info-line" style="margin-top:10px"><span>Best combo</span><b id="bestCombo">0</b></div>
+ </section>
+
+</aside>
+</div>
+
+<footer>© 2026 SNAKE XTREME • MADE WITH HTML, CSS & JAVASCRIPT</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+const SIZE = 500;
+const CELL = 25;
+const TOTAL = SIZE / CELL;
+
+const skins = [
+ {head:"#00f5d4",body:"#00a8a8"},
+ {head:"#60a5fa",body:"#2563eb"},
+ {head:"#e879f9",body:"#9333ea"},
+ {head:"#ffe45e",body:"#f59e0b"},
+ {head:"#ff647c",body:"#dc2626"}
+];
+
+let snake = [];
+let food = null;
+let obstacles = [];
+let powerup = null;
+
+let direction = "RIGHT";
+let nextDirection = "RIGHT";
+
+let score = 0;
+let coins = 0;
+let level = 1;
+let combo = 0;
+let bestCombo = 0;
+let foodCount = 0;
+let games = 0;
+
+let running = false;
+let paused = false;
+let ended = false;
+let soundOn = true;
+let shield = false;
+let skinIndex = 0;
+
+let timer = null;
+let lastFoodTime = 0;
+let touchStart = null;
+
+const $ = id => document.getElementById(id);
+
+const saved = JSON.parse(localStorage.getItem("snakeXtremeData") || "{}");
+
+let best = saved.best || 0;
+let totalCoins = saved.coins || 0;
+games = saved.games || 0;
+foodCount = saved.foodCount || 0;
+bestCombo = saved.bestCombo || 0;
+
+const unlocked = saved.unlocked || [];
+
+$("best").textContent = best;
+$("coins").textContent = totalCoins;
+$("games").textContent = games;
+$("foodCount").textContent = foodCount;
+$("bestCombo").textContent = bestCombo;
+
+const achievements = [
+ {id:"first",icon:"🍎",name:"First Bite",desc:"Eat your first food"},
+ {id:"score100",icon:"💯",name:"Century Club",desc:"Reach 100 points"},
+ {id:"score500",icon:"🔥",name:"Fire Master",desc:"Reach 500 points"},
+ {id:"level5",icon:"👑",name:"Level Legend",desc:"Reach level 5"},
+ {id:"combo5",icon:"⚡",name:"Combo Master",desc:"Get a 5x combo"}
+];
+
+function saveData(){
+ localStorage.setItem("snakeXtremeData",JSON.stringify({
+  best,
+  coins:totalCoins,
+  games,
+  foodCount,
+  bestCombo,
+  unlocked
+ }));
+}
+
+function updateStats(){
+ $("score").textContent = score;
+ $("best").textContent = best;
+ $("coins").textContent = totalCoins;
+ $("level").textContent = level;
+ $("games").textContent = games;
+ $("foodCount").textContent = foodCount;
+ $("bestCombo").textContent = bestCombo;
+ $("shieldStatus").textContent = shield ? "ACTIVE 🛡️" : "OFF";
+
+ const xp = score % 100;
+ $("progressBar").style.width = xp + "%";
+ $("progressText").textContent = xp + " / 100 XP";
+ $("nextLevel").textContent = "Level " + (level + 1);
+}
+
+function showToast(message){
+ const el = $("toast");
+ el.textContent = message;
+ el.style.display = "block";
+ clearTimeout(showToast.timeout);
+ showToast.timeout = setTimeout(()=>el.style.display="none",2000);
+}
+
+function beep(freq=500,duration=.08){
+ if(!soundOn) return;
+ try{
+  const audio = new (window.AudioContext || window.webkitAudioContext)();
+  const oscillator = audio.createOscillator();
+  const gain = audio.createGain();
+  oscillator.connect(gain);
+  gain.connect(audio.destination);
+  oscillator.frequency.value = freq;
+  gain.gain.value = .045;
+  oscillator.start();
+  oscillator.stop(audio.currentTime + duration);
+  oscillator.onended = ()=>audio.close();
+ }catch(e){}
+}
+
+$("soundBtn").onclick = ()=>{
+ soundOn = !soundOn;
+ $("soundBtn").textContent = soundOn ? "🔊 Sound ON" : "🔇 Sound OFF";
+ beep(650);
+};
+
+function randomCell(){
+ return {
+  x:Math.floor(Math.random()*TOTAL),
+  y:Math.floor(Math.random()*TOTAL)
+ };
+}
+
+function occupied(x,y){
+ return snake.some(p=>p.x===x && p.y===y) ||
+ obstacles.some(p=>p.x===x && p.y===y);
+}
+
+function createFood(){
+ let p;
+ do{p=randomCell()}while(occupied(p.x,p.y));
+ return p;
+}
+
+function createPowerup(){
+ const p=createFood();
+ const types=["gold","gem","shield"];
+ powerup={...p,type:types[Math.floor(Math.random()*types.length)]};
+}
+
+function addObstacles(){
+ obstacles=[];
+ const count=Math.min(level,10);
+ for(let i=0;i<count;i++){
+  let p;
+  let attempts=0;
+  do{
+   p=randomCell();
+   attempts++;
+  }while(
+   attempts<100 &&
+   (occupied(p.x,p.y) || (Math.abs(p.x-10)<4 && Math.abs(p.y-10)<4))
+  );
+  if(!occupied(p.x,p.y)) obstacles.push(p);
+ }
+}
+
+function resetState(){
+ snake=[
+  {x:10,y:10},
+  {x:9,y:10},
+  {x:8,y:10}
+ ];
+ direction="RIGHT";
+ nextDirection="RIGHT";
+ score=0;
+ coins=0;
+ level=1;
+ combo=0;
+ shield=false;
+ powerup=null;
+ obstacles=[];
+ food=createFood();
+ addObstacles();
+ updateStats();
+ draw();
+}
+
+function getSpeed(){
+ const mode=$("difficulty").value;
+ let base=mode==="easy"?175:mode==="hard"?85:125;
+ return Math.max(55,base-(level-1)*7);
+}
+
+function startLoop(){
+ clearTimeout(timer);
+ if(!running || paused || ended) return;
+ timer=setTimeout(()=>{
+  updateGame();
+  startLoop();
+ },getSpeed());
+}
+
+function startGame(){
+ if(running && !paused) return;
+
+ if(ended){
+  restartGame();
+  return;
+ }
+
+ running=true;
+ paused=false;
+ $("overlay").classList.add("hidden");
+ $("status").textContent="● PLAYING";
+ startLoop();
+ beep(600);
+}
+
+function pauseGame(){
+ if(!running || ended) return;
+ paused=!paused;
+
+ if(paused){
+  clearTimeout(timer);
+  $("overlayTitle").textContent="PAUSED ⏸";
+  $("overlayText").textContent="Game paused. Continue whenever you're ready!";
+  $("overlayBtn").textContent="▶ RESUME";
+  $("overlay").classList.remove("hidden");
+  $("status").textContent="● PAUSED";
+ }else{
+  $("overlay").classList.add("hidden");
+  $("status").textContent="● PLAYING";
+  startLoop();
+ }
+}
+
+function restartGame(){
+ clearTimeout(timer);
+ running=false;
+ paused=false;
+ ended=false;
+ games++;
+ resetState();
+ $("overlayTitle").textContent="SNAKE XTREME";
+ $("overlayText").textContent="New game! Collect food and beat your high score.";
+ $("overlayBtn").textContent="▶ START GAME";
+ $("overlay").classList.remove("hidden");
+ $("status").textContent="● READY";
+ saveData();
+}
+
+function changeDirection(d){
+ if(!running || paused || ended) return;
+
+ const opposite={
+  UP:"DOWN",DOWN:"UP",LEFT:"RIGHT",RIGHT:"LEFT"
+ };
+
+ if(d!==opposite[direction] && d!==direction){
+  nextDirection=d;
+ }
+}
+
+document.addEventListener("keydown",e=>{
+ const keys={
+  ArrowUp:"UP",ArrowDown:"DOWN",
+  ArrowLeft:"LEFT",ArrowRight:"RIGHT",
+  w:"UP",s:"DOWN",a:"LEFT",d:"RIGHT",
+  W:"UP",S:"DOWN",A:"LEFT",D:"RIGHT"
+ };
+
+ if(keys[e.key]){
+  e.preventDefault();
+  changeDirection(keys[e.key]);
+ }
+
+ if(e.code==="Space"){
+  e.preventDefault();
+  if(running) pauseGame();
+  else if(paused) pauseGame();
+  else if(!ended) startGame();
+ }
+});
+
+canvas.addEventListener("touchstart",e=>{
+ const t=e.changedTouches[0];
+ touchStart={x:t.clientX,y:t.clientY};
+},{passive:true});
+
+canvas.addEventListener("touchend",e=>{
+ if(!touchStart)return;
+ const t=e.changedTouches[0];
+ const dx=t.clientX-touchStart.x;
+ const dy=t.clientY-touchStart.y;
+
+ if(Math.max(Math.abs(dx),Math.abs(dy))>20){
+  if(Math.abs(dx)>Math.abs(dy)){
+   changeDirection(dx>0?"RIGHT":"LEFT");
+  }else{
+   changeDirection(dy>0?"DOWN":"UP");
+  }
+ }
+ touchStart=null;
+},{passive:true});
+
+function updateGame(){
+ if(!running || paused || ended)return;
+
+ direction=nextDirection;
+
+ const head={...snake[0]};
+
+ if(direction==="UP")head.y--;
+ if(direction==="DOWN")head.y++;
+ if(direction==="LEFT")head.x--;
+ if(direction==="RIGHT")head.x++;
+
+ const eating=head.x===food.x && head.y===food.y;
+ const hitObstacle=obstacles.some(p=>p.x===head.x && p.y===head.y);
+
+ const body=eating?snake:snake.slice(0,-1);
+ const hitSelf=body.some(p=>p.x===head.x && p.y===head.y);
+
+ if(
+  head.x<0 || head.y<0 ||
+  head.x>=TOTAL || head.y>=TOTAL ||
+  hitSelf || hitObstacle
+ ){
+  if(shield){
+   shield=false;
+   updateStats();
+   showToast("🛡️ Shield saved you!");
+   beep(800);
+   restartAfterShield();
+   return;
+  }
+  endGame();
+  return;
+ }
+
+ snake.unshift(head);
+
+ if(eating){
+  combo++;
+  bestCombo=Math.max(bestCombo,combo);
+  foodCount++;
+  lastFoodTime=Date.now();
+
+  const bonus=Math.min(combo,5)*2;
+  score+=10+bonus;
+
+  if(score>best){
+   best=score;
+  }
+
+  coins+=1;
+  totalCoins+=1;
+
+  if(score>=level*100){
+   level++;
+   showToast("🎉 LEVEL "+level+" UNLOCKED!");
+   addObstacles();
+   beep(900,.2);
+  }else{
+   beep(650);
+  }
+
+  food=createFood();
+
+  if(foodCount%4===0 && !powerup){
+   createPowerup();
+   showToast("⚡ Bonus power-up appeared!");
+  }
+
+  checkAchievements();
+  saveData();
+
+ }else{
+  snake.pop();
+
+  if(Date.now()-lastFoodTime>5000){
+   combo=0;
+  }
+ }
+
+ if(powerup && head.x===powerup.x && head.y===powerup.y){
+  collectPowerup();
+ }
+
+ updateStats();
+ draw();
+}
+
+function restartAfterShield(){
+ // Move the snake back to a safe starting position.
+ snake=[
+  {x:10,y:10},
+  {x:9,y:10},
+  {x:8,y:10}
+ ];
+ direction="RIGHT";
+ nextDirection="RIGHT";
+ obstacles=obstacles.filter(p=>!(p.x>=7 && p.x<=13 && p.y>=7 && p.y<=13));
+ food=createFood();
+ draw();
+}
+
+function collectPowerup(){
+ if(!powerup)return;
+
+ if(powerup.type==="gold"){
+  score+=50;
+  coins+=5;
+  totalCoins+=5;
+  showToast("⭐ GOLDEN FOOD +50 POINTS!");
+  beep(1000,.2);
+ }else if(powerup.type==="gem"){
+  coins+=10;
+  totalCoins+=10;
+  showToast("💎 GEM COLLECTED +10 COINS!");
+  beep(1200,.2);
+ }else{
+  shield=true;
+  showToast("🛡️ SHIELD ACTIVATED!");
+  beep(850,.2);
+ }
+
+ powerup=null;
+ if(score>best)best=score;
+ checkAchievements();
+ saveData();
+}
+
+function checkAchievements(){
+ const checks={
+  first:foodCount>=1,
+  score100:score>=100,
+  score500:score>=500,
+  level5:level>=5,
+  combo5:bestCombo>=5
+ };
+
+ achievements.forEach(a=>{
+  if(checks[a.id] && !unlocked.includes(a.id)){
+   unlocked.push(a.id);
+   showToast("🏆 Achievement: "+a.name);
+   beep(1100,.15);
+  }
+ });
+
+ renderAchievements();
+}
+
+function renderAchievements(){
+ $("achievements").innerHTML="";
+ achievements.forEach(a=>{
+  const done=unlocked.includes(a.id);
+  const div=document.createElement("div");
+  div.className="achievement"+(done?"":" locked");
+  const icon=document.createElement("span");
+  icon.className="emoji";
+  icon.textContent=done?a.icon:"🔒";
+  const info=document.createElement("div");
+  const name=document.createElement("b");
+  name.textContent=a.name;
+  const desc=document.createElement("small");
+  desc.textContent=a.desc;
+  info.append(name,desc);
+  div.append(icon,info);
+  $("achievements").append(div);
+ });
+}
+
+function endGame(){
+ running=false;
+ ended=true;
+ clearTimeout(timer);
+
+ if(score>best)best=score;
+
+ saveData();
+ updateStats();
+
+ $("overlayTitle").textContent="GAME OVER!";
+ $("overlayText").textContent="Your score: "+score+" | Level: "+level+" | Coins earned: "+coins;
+ $("overlayBtn").textContent="↻ PLAY AGAIN";
+ $("overlay").classList.remove("hidden");
+ $("status").textContent="● GAME OVER";
+
+ beep(180,.4);
+}
+
+function roundedRect(x,y,w,h,r){
+ ctx.beginPath();
+ ctx.roundRect(x,y,w,h,r);
+ ctx.fill();
+}
+
+function draw(){
+ ctx.fillStyle="#090d1c";
+ ctx.fillRect(0,0,SIZE,SIZE);
+
+ // Background grid
+ ctx.strokeStyle="rgba(125,120,180,.10)";
+ ctx.lineWidth=1;
+
+ for(let i=0;i<=SIZE;i+=CELL){
+  ctx.beginPath();
+  ctx.moveTo(i,0);
+  ctx.lineTo(i,SIZE);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(0,i);
+  ctx.lineTo(SIZE,i);
+  ctx.stroke();
+ }
+
+ // Obstacles
+ obstacles.forEach(p=>{
+  ctx.fillStyle="#fb3d5e";
+  ctx.shadowColor="#ff365d";
+  ctx.shadowBlur=10;
+  roundedRect(p.x*CELL+3,p.y*CELL+3,CELL-6,CELL-6,5);
+ });
+ ctx.shadowBlur=0;
+
+ // Food
+ if(food){
+  ctx.shadowColor="#ff477e";
+  ctx.shadowBlur=18;
+  ctx.fillStyle="#ff477e";
+  ctx.beginPath();
+  ctx.arc(food.x*CELL+12.5,food.y*CELL+12.5,8,0,Math.PI*2);
+  ctx.fill();
+  ctx.shadowBlur=0;
+ }
+
+ // Powerup
+ if(powerup){
+  const colors={gold:"#ffe45e",gem:"#00e5ff",shield:"#a855f7"};
+  ctx.fillStyle=colors[powerup.type];
+  ctx.shadowColor=colors[powerup.type];
+  ctx.shadowBlur=18;
+  roundedRect(powerup.x*CELL+4,powerup.y*CELL+4,17,17,6);
+  ctx.shadowBlur=0;
+  ctx.fillStyle="#111";
+  ctx.font="14px Arial";
+  ctx.textAlign="center";
+  ctx.fillText(
+   powerup.type==="gold"?"★":powerup.type==="gem"?"♦":"S",
+   powerup.x*CELL+12.5,
+   powerup.y*CELL+18
+  );
+ }
+
+ // Snake
+ const skin=skins[skinIndex];
+
+ snake.forEach((p,i)=>{
+  ctx.fillStyle=i===0?skin.head:skin.body;
+  ctx.shadowColor=skin.head;
+  ctx.shadowBlur=i===0?15:5;
+  roundedRect(p.x*CELL+2,p.y*CELL+2,CELL-4,CELL-4,7);
+ });
+
+ ctx.shadowBlur=0;
+
+ // Eyes
+ if(snake.length){
+  const h=snake[0];
+  ctx.fillStyle="#07121c";
+  let eyes=[[8,7],[17,7]];
+
+  if(direction==="DOWN")eyes=[[8,17],[17,17]];
+  if(direction==="LEFT")eyes=[[7,8],[7,17]];
+  if(direction==="RIGHT")eyes=[[17,8],[17,17]];
+
+  eyes.forEach(([x,y])=>{
+   ctx.beginPath();
+   ctx.arc(h.x*CELL+x,h.y*CELL+y,2.2,0,Math.PI*2);
+   ctx.fill();
+  });
+ }
+}
+
+// Skin selection
+document.querySelectorAll(".skin").forEach(btn=>{
+ btn.addEventListener("click",()=>{
+  skinIndex=Number(btn.dataset.skin);
+  document.querySelectorAll(".skin").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  draw();
+  beep(550);
+ });
+});
+
+// Difficulty
+$("difficulty").addEventListener("change",()=>{
+ if(running && !paused)startLoop();
+ showToast("Difficulty updated!");
+});
+
+function showHelp(){
+ $("overlayTitle").textContent="HOW TO PLAY";
+ $("overlayText").textContent=
+ "Use Arrow Keys or WASD to move. Eat pink food for points. Collect bonus items. Avoid walls, yourself and red obstacles. Space = Pause. Reach higher levels to increase your speed!";
+ $("overlayBtn").textContent="▶ BACK TO GAME";
+ $("overlayBtn").onclick=()=>{
+  $("overlayBtn").onclick=startGame;
+  $("overlayBtn").textContent="▶ START GAME";
+  if(paused){
+   $("overlay").classList.add("hidden");
+   pauseGame();
+  }else{
+   $("overlay").classList.add("hidden");
+  }
+ };
+ $("overlay").classList.remove("hidden");
+}
+
+renderAchievements();
+resetState();
+</script>
 </body>
 </html>
-
